@@ -1,0 +1,21 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "科研任务分配管理系统"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "科研任务分配管理"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "任务管理"
+    },
+    {
+      "name": "app_name",
+      "value": "科研任务管理"
+    }
+  ]
+}
+

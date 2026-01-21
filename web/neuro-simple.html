@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 科研任务管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 450px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .form-container {
+            padding: 30px;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1e293b;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102,126,234,0.4);
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .permission-group {
+            margin-top: 20px;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 10px;
+        }
+
+        .permission-group h4 {
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: #667eea;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .url-info {
+            margin-top: 20px;
+            padding: 16px;
+            background: #e0e7ff;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        .url-info strong {
+            color: #667eea;
+        }
+
+        .url-info code {
+            display: block;
+            margin-top: 8px;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+        }
+
+        @media (max-width: 600px) {
+            .form-row,
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 科研任务管理系统</h1>
+            <p>神经精神亚专业研究生管理平台</p>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('login')">登录</div>
+            <div class="tab" onclick="switchTab('register')">注册</div>
+        </div>
+
+        <div class="form-container">
+            <!-- 登录表单 -->
+            <div id="login-section" class="form-section active">
+                <div id="login-message" class="message"></div>
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>学号</label>
+                        <input type="text" id="login-studentId" required placeholder="请输入学号">
+                    </div>
+                    <div class="form-group">
+                        <label>密码</label>
+                        <input type="password" id="login-password" required placeholder="请输入密码">
+                    </div>
+                    <button type="submit" class="btn">登录</button>
+                </form>
+            </div>
+
+            <!-- 注册表单 -->
+            <div id="register-section" class="form-section">
+                <div id="register-message" class="message"></div>
+                <form onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label>学号 *</label>
+                        <input type="text" id="reg-studentId" required placeholder="例如：202301001">
+                    </div>
+                    <div class="form-group">
+                        <label>姓名 *</label>
+                        <input type="text" id="reg-name" required placeholder="请输入真实姓名">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>年级 *</label>
+                            <input type="text" id="reg-grade" required placeholder="例如：2024级" list="grade-list">
+                            <datalist id="grade-list">
+                                <option value="2024级">
+                                <option value="2023级">
+                                <option value="2022级">
+                                <option value="2021级">
+                                <option value="2020级">
+                            </datalist>
+                        </div>
+                        <div class="form-group">
+                            <label>培养层次 *</label>
+                            <select id="reg-level" required>
+                                <option value="">请选择</option>
+                                <option value="硕士研究生">硕士研究生</option>
+                                <option value="博士研究生">博士研究生</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>学校 *</label>
+                        <input type="text" id="reg-school" required placeholder="例如：XX医科大学">
+                    </div>
+                    <div class="form-group">
+                        <label>联系电话 *</label>
+                        <input type="tel" id="reg-phone" required placeholder="请输入手机号">
+                    </div>
+                    <div class="form-group">
+                        <label>电子邮件</label>
+                        <input type="email" id="reg-email" placeholder="选填">
+                    </div>
+
+                    <div class="form-group">
+                        <label>用户角色 *</label>
+                        <select id="reg-role" onchange="updateRolePermissions()">
+                            <option value="user">普通用户</option>
+                            <option value="admin">管理员</option>
+                        </select>
+                        <p style="font-size: 12px; color: #64748b; margin-top: 4px;">
+                            管理员拥有所有权限，可以管理其他用户
+                        </p>
+                    </div>
+                    
+                    <!-- 权限设置 -->
+                    <div class="permission-group">
+                        <h4>🔐 权限设置</h4>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="perm-create" checked>
+                                <label for="perm-create">创建任务</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="perm-edit" checked>
+                                <label for="perm-edit">编辑任务</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="perm-delete" checked>
+                                <label for="perm-delete">删除任务</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="perm-view" checked>
+                                <label for="perm-view">查看任务</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="perm-analytics" checked>
+                                <label for="perm-analytics">数据分析</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="perm-export" checked>
+                                <label for="perm-export">导出数据</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>密码 *</label>
+                        <input type="password" id="reg-password" required placeholder="至少6位" minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label>确认密码 *</label>
+                        <input type="password" id="reg-password2" required placeholder="再次输入密码" minlength="6">
+                    </div>
+                    <button type="submit" class="btn">注册</button>
+
+                    <div class="url-info">
+                        <strong>💡 提示：</strong>注册成功后，您可以使用以下链接直接登录：
+                        <code id="direct-login-url">等待注册...</code>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 切换标签
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(tab + '-section').classList.add('active');
+
+            document.querySelectorAll('.message').forEach(m => {
+                m.classList.remove('show');
+                m.textContent = '';
+            });
+        }
+
+        // 显示消息
+        function showMessage(elementId, message, type) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = 'message show ' + type;
+        }
+
+        // 生成访问令牌
+        function generateToken(studentId) {
+            return btoa(studentId + ':' + Date.now());
+        }
+
+        // 获取权限
+        function getPermissions() {
+            return {
+                create: document.getElementById('perm-create').checked,
+                edit: document.getElementById('perm-edit').checked,
+                delete: document.getElementById('perm-delete').checked,
+                view: document.getElementById('perm-view').checked,
+                analytics: document.getElementById('perm-analytics').checked,
+                export: document.getElementById('perm-export').checked
+            };
+        }
+
+        // 根据角色更新权限
+        function updateRolePermissions() {
+            const role = document.getElementById('reg-role').value;
+            
+            if (role === 'admin') {
+                // 管理员：全部权限
+                document.getElementById('perm-create').checked = true;
+                document.getElementById('perm-edit').checked = true;
+                document.getElementById('perm-delete').checked = true;
+                document.getElementById('perm-view').checked = true;
+                document.getElementById('perm-analytics').checked = true;
+                document.getElementById('perm-export').checked = true;
+                
+                // 禁用权限复选框（管理员必须全部权限）
+                document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(cb => {
+                    cb.disabled = true;
+                });
+            } else {
+                // 普通用户：只给查看权限
+                document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(cb => {
+                    cb.disabled = false;
+                });
+                
+                // 设置默认权限：只有查看权限
+                document.getElementById('perm-create').checked = false;
+                document.getElementById('perm-edit').checked = false;
+                document.getElementById('perm-delete').checked = false;
+                document.getElementById('perm-view').checked = true;
+                document.getElementById('perm-analytics').checked = false;
+                document.getElementById('perm-export').checked = false;
+            }
+        }
+
+        // 处理注册
+        function handleRegister(event) {
+            event.preventDefault();
+
+            const studentId = document.getElementById('reg-studentId').value.trim();
+            const name = document.getElementById('reg-name').value.trim();
+            const grade = document.getElementById('reg-grade').value;
+            const level = document.getElementById('reg-level').value;
+            const school = document.getElementById('reg-school').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const password2 = document.getElementById('reg-password2').value;
+
+            // 验证
+            if (password !== password2) {
+                showMessage('register-message', '两次输入的密码不一致！', 'error');
+                return;
+            }
+
+            // 检查学号是否已存在
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            if (users.find(u => u.studentId === studentId)) {
+                showMessage('register-message', '该学号已被注册！', 'error');
+                return;
+            }
+
+            // 生成访问令牌
+            const token = generateToken(studentId);
+
+            // 获取角色
+            const role = document.getElementById('reg-role').value;
+
+            // 创建用户
+            const user = {
+                id: Date.now(),
+                studentId,
+                name,
+                grade,
+                level,
+                school,
+                phone,
+                email,
+                password,
+                token,
+                role,
+                permissions: getPermissions(),
+                registerTime: Date.now()
+            };
+
+            users.push(user);
+            localStorage.setItem('users', JSON.stringify(users));
+
+            // 显示直接登录链接
+            const baseUrl = window.location.href.replace('neuro-simple.html', 'advanced-system.html');
+            const directUrl = `${baseUrl}?token=${token}`;
+            document.getElementById('direct-login-url').textContent = directUrl;
+
+            showMessage('register-message', '注册成功！您可以复制上方链接直接登录，或点击登录标签手动登录。', 'success');
+
+            // 3秒后自动跳转
+            setTimeout(() => {
+                document.getElementById('login-studentId').value = studentId;
+                document.getElementById('login-password').value = password;
+                switchTab('login');
+                document.querySelectorAll('.tab')[0].click();
+            }, 3000);
+        }
+
+        // 处理登录
+        function handleLogin(event) {
+            event.preventDefault();
+
+            const studentId = document.getElementById('login-studentId').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            // 获取用户列表
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.studentId === studentId && u.password === password);
+
+            if (!user) {
+                showMessage('login-message', '学号或密码错误！', 'error');
+                return;
+            }
+
+            // 保存当前用户
+            localStorage.setItem('currentUser', JSON.stringify(user));
+
+            showMessage('login-message', '登录成功！正在跳转...', 'success');
+
+            // 根据角色跳转
+            setTimeout(() => {
+                if (user.role === 'admin') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'advanced-system.html';
+                }
+            }, 1000);
+        }
+
+        // 页面加载时检查URL参数和登录状态
+        window.onload = function() {
+            // 初始化默认管理员账号
+            initDefaultAdmin();
+            
+            // 检查URL中的token参数
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+
+            if (token) {
+                // 通过token自动登录
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                const user = users.find(u => u.token === token);
+
+                if (user) {
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    showMessage('login-message', '自动登录成功！正在跳转...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'advanced-system.html';
+                    }, 1000);
+                    return;
+                } else {
+                    showMessage('login-message', '无效的访问令牌！', 'error');
+                }
+            }
+
+            // 检查是否已登录
+            const currentUser = localStorage.getItem('currentUser');
+            if (currentUser) {
+                const user = JSON.parse(currentUser);
+                if (confirm(`检测到您已登录（${user.name}），是否直接进入系统？`)) {
+                    window.location.href = 'advanced-system.html';
+                } else {
+                    localStorage.removeItem('currentUser');
+                }
+            }
+            
+            // 初始化权限设置
+            updateRolePermissions();
+        };
+        
+        // 初始化默认管理员账号
+        function initDefaultAdmin() {
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            
+            // 检查是否已存在管理员账号
+            const adminExists = users.find(u => u.studentId === '20251100029');
+            
+            if (!adminExists) {
+                const adminUser = {
+                    id: Date.now(),
+                    studentId: '20251100029',
+                    name: '系统管理员',
+                    grade: '2025级',
+                    level: '博士研究生',
+                    school: '系统默认',
+                    phone: '13800138000',
+                    email: 'admin@system.com',
+                    password: 'caoxu1990.',
+                    token: generateToken('20251100029'),
+                    role: 'admin',
+                    permissions: {
+                        create: true,
+                        edit: true,
+                        delete: true,
+                        view: true,
+                        analytics: true,
+                        export: true
+                    },
+                    registerTime: Date.now()
+                };
+                
+                users.push(adminUser);
+                localStorage.setItem('users', JSON.stringify(users));
+                console.log('✅ 默认管理员账号已创建');
+            }
+        }
+    </script>
+</body>
+</html>

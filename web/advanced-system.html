@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神经精神亚专业研究生管理系统 - 深度版</title>
+    <link rel="stylesheet" href="advanced-style.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">🧠 科研任务深度管理系统</div>
+            <div class="nav-menu">
+                <a href="#" class="nav-link active" data-page="dashboard">工作台</a>
+                <a href="#" class="nav-link" data-page="tasks">任务管理</a>
+                <a href="#" class="nav-link" data-page="analytics">数据分析</a>
+                <a href="#" class="nav-link" data-page="profile">个人中心</a>
+                <a href="#" class="nav-link" data-page="admin" id="admin-link" style="display:none;">👑 管理后台</a>
+            </div>
+            <div class="nav-user">
+                <span id="user-name">用户</span>
+                <button class="btn-logout" onclick="app.logout()">退出</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 工作台 -->
+        <div id="dashboard-page" class="page active">
+            <div class="welcome-section">
+                <h1>欢迎回来，<span id="welcome-name"></span>！</h1>
+                <p id="user-info"></p>
+                <div class="quick-stats">
+                    <div class="quick-stat">
+                        <span class="stat-number" id="today-progress">0%</span>
+                        <span class="stat-label">今日完成率</span>
+                    </div>
+                    <div class="quick-stat">
+                        <span class="stat-number" id="week-tasks">0</span>
+                        <span class="stat-label">本周任务</span>
+                    </div>
+                    <div class="quick-stat">
+                        <span class="stat-number" id="total-hours">0h</span>
+                        <span class="stat-label">累计工时</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h2>📊 任务概览</h2>
+                    <div class="task-overview" id="task-overview"></div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h2>⏰ 今日待办</h2>
+                    <div id="today-tasks"></div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h2>📈 进度趋势</h2>
+                    <div class="progress-chart" id="progress-chart"></div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h2>🎯 本周目标</h2>
+                    <div id="week-goals"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 任务管理页 -->
+        <div id="tasks-page" class="page">
+            <div class="page-header">
+                <h1>科研任务全流程管理</h1>
+                <button class="btn btn-primary" onclick="app.showTaskModal()">+ 创建任务</button>
+            </div>
+
+            <div class="task-filters">
+                <button class="filter-btn active" data-filter="all">全部</button>
+                <button class="filter-btn" data-filter="planning">规划中</button>
+                <button class="filter-btn" data-filter="in-progress">进行中</button>
+                <button class="filter-btn" data-filter="review">待审核</button>
+                <button class="filter-btn" data-filter="completed">已完成</button>
+            </div>
+
+            <div id="tasks-container"></div>
+        </div>
+
+        <!-- 数据分析页 -->
+        <div id="analytics-page" class="page">
+            <div class="page-header">
+                <h1>数据分析与洞察</h1>
+            </div>
+
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <h3>📊 任务完成统计</h3>
+                    <div id="completion-stats"></div>
+                </div>
+
+                <div class="analytics-card">
+                    <h3>⏱️ 时间分布分析</h3>
+                    <div id="time-distribution"></div>
+                </div>
+
+                <div class="analytics-card">
+                    <h3>🎯 效率分析</h3>
+                    <div id="efficiency-analysis"></div>
+                </div>
+
+                <div class="analytics-card">
+                    <h3>📈 成长曲线</h3>
+                    <div id="growth-curve"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 个人中心页 -->
+        <div id="profile-page" class="page">
+            <div class="page-header">
+                <h1>个人中心</h1>
+            </div>
+
+            <div class="profile-grid">
+                <div class="profile-card">
+                    <h3>👤 基本信息</h3>
+                    <div id="profile-basic"></div>
+                </div>
+
+                <div class="profile-card">
+                    <h3>🏆 成就系统</h3>
+                    <div id="achievements"></div>
+                </div>
+
+                <div class="profile-card">
+                    <h3>📊 能力雷达图</h3>
+                    <div id="ability-radar"></div>
+                </div>
+
+                <div class="profile-card">
+                    <h3>📅 活动日历</h3>
+                    <div id="activity-calendar"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 管理后台页 -->
+        <div id="admin-page" class="page">
+            <div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 32px; border-radius: 16px; margin-bottom: 24px;">
+                <h1 style="font-size: 28px; margin-bottom: 8px;">👑 管理员控制台</h1>
+                <p style="opacity: 0.9;">管理所有用户账号和权限</p>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 24px;">
+                    <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 32px; font-weight: 700; margin-bottom: 4px;" id="admin-total-users">0</div>
+                        <div style="font-size: 13px; opacity: 0.9;">总用户数</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 32px; font-weight: 700; margin-bottom: 4px;" id="admin-total-tasks">0</div>
+                        <div style="font-size: 13px; opacity: 0.9;">总任务数</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 32px; font-weight: 700; margin-bottom: 4px;" id="admin-active-users">0</div>
+                        <div style="font-size: 13px; opacity: 0.9;">活跃用户</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 32px; font-weight: 700; margin-bottom: 4px;" id="admin-completion-rate">0%</div>
+                        <div style="font-size: 13px; opacity: 0.9;">完成率</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-header">
+                <h1>用户管理</h1>
+                <button class="btn btn-primary" onclick="app.showAddUserModal()">+ 添加用户</button>
+            </div>
+
+            <div style="margin-bottom: 20px; display: flex; gap: 12px;">
+                <input type="text" id="admin-search" placeholder="搜索用户（学号、姓名）" 
+                    style="flex: 1; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 14px;"
+                    oninput="app.searchAdminUsers()">
+                <select id="admin-role-filter" onchange="app.filterAdminUsers()" 
+                    style="padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px;">
+                    <option value="all">全部角色</option>
+                    <option value="admin">管理员</option>
+                    <option value="user">普通用户</option>
+                </select>
+            </div>
+
+            <div id="admin-users-list"></div>
+
+            <div class="page-header" style="margin-top: 40px;">
+                <h1>权限模板</h1>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h2>👑 管理员模板</h2>
+                    <p style="color: #64748b; margin: 12px 0; font-size: 14px;">拥有所有权限，可以管理用户</p>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 16px 0;">
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" checked disabled style="width: 16px; height: 16px;">
+                            <label style="font-size: 13px;">创建任务</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" checked disabled style="width: 16px; height: 16px;">
+                            <label style="font-size: 13px;">编辑任务</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" checked disabled style="width: 16px; height: 16px;">
+                            <label style="font-size: 13px;">删除任务</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" checked disabled style="width: 16px; height: 16px;">
+                            <label style="font-size: 13px;">查看任务</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" checked disabled style="width: 16px; height: 16px;">
+                            <label style="font-size: 13px;">数据分析</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" checked disabled style="width: 16px; height: 16px;">
+                            <label style="font-size: 13px;">导出数据</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h2>👨‍🎓 研究生模板</h2>
+                    <p style="color: #64748b; margin: 12px 0; font-size: 14px;">标准权限，适合研究生使用</p>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 16px 0;">
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" checked disabled style="width: 16px; height: 16px;">
+                            <label style="font-size: 13px;">创建任务</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" checked disabled style="width: 16px; height: 16px;">
+                            <label style="font-size: 13px;">编辑任务</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" disabled style="width: 16px; height: 16px;">
+                            <label style="font-size: 13px;">删除任务</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" checked disabled style="width: 16px; height: 16px;">
+                            <label style="font-size: 13px;">查看任务</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" checked disabled style="width: 16px; height: 16px;">
+                            <label style="font-size: 13px;">数据分析</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" disabled style="width: 16px; height: 16px;">
+                            <label style="font-size: 13px;">导出数据</label>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="app.applyTemplate('student')" style="width: 100%; margin-top: 12px;">应用模板</button>
+                </div>
+
+                <div class="dashboard-card">
+                    <h2>👁️ 访客模板</h2>
+                    <p style="color: #64748b; margin: 12px 0; font-size: 14px;">只读权限，仅可查看</p>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 16px 0;">
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" disabled style="width: 16px; height: 16px;">
+                            <label style="font-size: 13px;">创建任务</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" disabled style="width: 16px; height: 16px;">
+                            <label style="font-size: 13px;">编辑任务</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" disabled style="width: 16px; height: 16px;">
+                            <label style="font-size: 13px;">删除任务</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" checked disabled style="width: 16px; height: 16px;">
+                            <label style="font-size: 13px;">查看任务</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" checked disabled style="width: 16px; height: 16px;">
+                            <label style="font-size: 13px;">数据分析</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" disabled style="width: 16px; height: 16px;">
+                            <label style="font-size: 13px;">导出数据</label>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="app.applyTemplate('guest')" style="width: 100%; margin-top: 12px;">应用模板</button>
+                </div>
+
+                <div class="dashboard-card">
+                    <h2>🔧 自定义模板</h2>
+                    <p style="color: #64748b; margin: 12px 0; font-size: 14px;">自由组合权限</p>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 16px 0;">
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" id="custom-create" style="width: 16px; height: 16px;">
+                            <label for="custom-create" style="font-size: 13px;">创建任务</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" id="custom-edit" style="width: 16px; height: 16px;">
+                            <label for="custom-edit" style="font-size: 13px;">编辑任务</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" id="custom-delete" style="width: 16px; height: 16px;">
+                            <label for="custom-delete" style="font-size: 13px;">删除任务</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" id="custom-view" style="width: 16px; height: 16px;">
+                            <label for="custom-view" style="font-size: 13px;">查看任务</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" id="custom-analytics" style="width: 16px; height: 16px;">
+                            <label for="custom-analytics" style="font-size: 13px;">数据分析</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8fafc; border-radius: 8px;">
+                            <input type="checkbox" id="custom-export" style="width: 16px; height: 16px;">
+                            <label for="custom-export" style="font-size: 13px;">导出数据</label>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="app.applyTemplate('custom')" style="width: 100%; margin-top: 12px;">应用模板</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 任务创建/编辑模态框 -->
+    <div id="task-modal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="modal-title">创建科研任务</h2>
+                <button class="close-btn" onclick="app.closeModal('task-modal')">&times;</button>
+            </div>
+            <form id="task-form" onsubmit="app.saveTask(event)">
+                <div class="form-sections">
+                    <div class="form-section">
+                        <h3>基本信息</h3>
+                        <div class="form-group">
+                            <label>任务编号</label>
+                            <input type="text" id="task-number" readonly style="background: #f8fafc;" placeholder="自动生成">
+                        </div>
+                        <div class="form-group">
+                            <label>任务名称 *</label>
+                            <input type="text" id="task-name" required placeholder="例如：完成fMRI数据预处理">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>任务类型 *</label>
+                                <select id="task-type" required>
+                                    <option value="实验设计">实验设计</option>
+                                    <option value="数据采集">数据采集</option>
+                                    <option value="数据分析">数据分析</option>
+                                    <option value="论文撰写">论文撰写</option>
+                                    <option value="文献综述">文献综述</option>
+                                    <option value="临床实践">临床实践</option>
+                                    <option value="科研进展">科研进展</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>优先级 *</label>
+                                <select id="task-priority" required>
+                                    <option value="高">🔴 高优先级</option>
+                                    <option value="中" selected>🟡 中优先级</option>
+                                    <option value="低">🟢 低优先级</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>人员分配</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>指派人 *</label>
+                                <input type="text" id="task-assigner" readonly style="background: #f8fafc;">
+                            </div>
+                            <div class="form-group">
+                                <label>接收人 *</label>
+                                <select id="task-assignee" required>
+                                    <option value="">请选择接收人</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>接收日期</label>
+                            <input type="date" id="task-accept-date" readonly style="background: #f8fafc;">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>时间规划</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>开始日期 *</label>
+                                <input type="date" id="task-start" required>
+                            </div>
+                            <div class="form-group">
+                                <label>截止日期 *</label>
+                                <input type="date" id="task-deadline" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>预计工时（小时）</label>
+                            <input type="number" id="task-hours" min="0" step="0.5" placeholder="例如：8">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>任务详情</h3>
+                        <div class="form-group">
+                            <label>任务描述</label>
+                            <textarea id="task-desc" rows="3" placeholder="详细描述任务内容和目标"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>关键步骤（每行一个步骤）</label>
+                            <textarea id="task-steps" rows="4" placeholder="步骤1：准备实验材料&#10;步骤2：进行数据采集&#10;步骤3：数据质量检查"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="app.closeModal('task-modal')">取消</button>
+                    <button type="submit" class="btn btn-primary">保存任务</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 任务详情模态框 -->
+    <div id="task-detail-modal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>任务详情</h2>
+                <button class="close-btn" onclick="app.closeModal('task-detail-modal')">&times;</button>
+            </div>
+            <div id="task-detail-content"></div>
+        </div>
+    </div>
+
+    <!-- 进度更新模态框 -->
+    <div id="progress-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>更新任务进度</h2>
+                <button class="close-btn" onclick="app.closeModal('progress-modal')">&times;</button>
+            </div>
+            <form id="progress-form" onsubmit="app.updateProgress(event)">
+                <div class="form-group">
+                    <label>当前进度 *</label>
+                    <input type="range" id="progress-value" min="0" max="100" value="0" oninput="app.updateProgressDisplay(this.value)">
+                    <div class="progress-display">
+                        <span id="progress-percent">0%</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>本次工作内容</label>
+                    <textarea id="progress-work" rows="3" placeholder="描述本次完成的工作内容"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>遇到的问题</label>
+                    <textarea id="progress-issues" rows="2" placeholder="记录遇到的问题和困难"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>实际工时（小时）</label>
+                    <input type="number" id="progress-hours" min="0" step="0.5" placeholder="本次投入的时间">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="app.closeModal('progress-modal')">取消</button>
+                    <button type="submit" class="btn btn-primary">提交更新</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 添加/编辑用户模态框 -->
+    <div id="user-modal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="user-modal-title">添加用户</h2>
+                <button class="close-btn" onclick="app.closeModal('user-modal')">&times;</button>
+            </div>
+            <form id="user-form" onsubmit="app.saveUser(event)">
+                <div class="form-sections">
+                    <div class="form-section">
+                        <h3>基本信息</h3>
+                        <div class="form-group">
+                            <label>学号 *</label>
+                            <input type="text" id="user-studentId" required>
+                        </div>
+                        <div class="form-group">
+                            <label>姓名 *</label>
+                            <input type="text" id="user-name" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>角色 *</label>
+                                <select id="user-role" onchange="app.updateUserRolePermissions()">
+                                    <option value="user">普通用户</option>
+                                    <option value="admin">管理员</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>年级 *</label>
+                                <select id="user-grade" required>
+                                    <option value="2024级">2024级</option>
+                                    <option value="2023级">2023级</option>
+                                    <option value="2022级">2022级</option>
+                                    <option value="2021级">2021级</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>培养层次 *</label>
+                                <select id="user-level" required>
+                                    <option value="硕士研究生">硕士研究生</option>
+                                    <option value="博士研究生">博士研究生</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>学校 *</label>
+                                <input type="text" id="user-school" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>联系电话 *</label>
+                                <input type="tel" id="user-phone" required>
+                            </div>
+                            <div class="form-group">
+                                <label>电子邮件</label>
+                                <input type="email" id="user-email">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>密码 *</label>
+                            <input type="password" id="user-password" required minlength="6">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>权限设置</h3>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                            <div style="display: flex; align-items: center; gap: 8px; padding: 12px; background: #f8fafc; border-radius: 8px;">
+                                <input type="checkbox" id="user-perm-create" style="width: 18px; height: 18px;">
+                                <label for="user-perm-create" style="font-size: 14px; cursor: pointer;">创建任务</label>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; padding: 12px; background: #f8fafc; border-radius: 8px;">
+                                <input type="checkbox" id="user-perm-edit" style="width: 18px; height: 18px;">
+                                <label for="user-perm-edit" style="font-size: 14px; cursor: pointer;">编辑任务</label>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; padding: 12px; background: #f8fafc; border-radius: 8px;">
+                                <input type="checkbox" id="user-perm-delete" style="width: 18px; height: 18px;">
+                                <label for="user-perm-delete" style="font-size: 14px; cursor: pointer;">删除任务</label>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; padding: 12px; background: #f8fafc; border-radius: 8px;">
+                                <input type="checkbox" id="user-perm-view" style="width: 18px; height: 18px;">
+                                <label for="user-perm-view" style="font-size: 14px; cursor: pointer;">查看任务</label>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; padding: 12px; background: #f8fafc; border-radius: 8px;">
+                                <input type="checkbox" id="user-perm-analytics" style="width: 18px; height: 18px;">
+                                <label for="user-perm-analytics" style="font-size: 14px; cursor: pointer;">数据分析</label>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; padding: 12px; background: #f8fafc; border-radius: 8px;">
+                                <input type="checkbox" id="user-perm-export" style="width: 18px; height: 18px;">
+                                <label for="user-perm-export" style="font-size: 14px; cursor: pointer;">导出数据</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="app.closeModal('user-modal')">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="advanced-app.js"></script>
+    <script src="advanced-enhance.js"></script>
+    <script src="feedback-system.js"></script>
+    <script src="data-visualization.js"></script>
+    <script src="profile-enhance.js"></script>
+    <script src="comprehensive-fix.js"></script>
+    <script src="advanced-features.js"></script>
+    <script src="advanced-analytics-1.js"></script>
+    <script src="advanced-analytics-2.js"></script>
+    <script src="task-improvements.js"></script>
+    <script src="v2.7-improvements.js"></script>
+    <script src="v2.7.1-fixes.js"></script>
+</body>
+</html>
+

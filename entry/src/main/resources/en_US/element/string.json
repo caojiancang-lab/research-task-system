@@ -1,0 +1,21 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "Research Task Management System"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "Research Task Management"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "Task Manager"
+    },
+    {
+      "name": "app_name",
+      "value": "Research Tasks"
+    }
+  ]
+}
+

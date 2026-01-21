@@ -1,0 +1,25 @@
+{
+  "name": "research-task-manager",
+  "version": "1.0.0",
+  "description": "科研任务分配管理系统 - HarmonyOS应用",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "HarmonyOS",
+    "ArkTS",
+    "任务管理",
+    "科研管理"
+  ],
+  "author": "",
+  "license": "MIT",
+  "ohos": {
+    "org": "com.research",
+    "buildTool": "hvigor",
+    "directoryLevel": "project"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
+
